@@ -47,7 +47,7 @@ class Slack:
             headers={'Content-type': 'application/json; charset=utf-8',
                      'Authorization': 'Bearer %s' % self.token})
         resp = urllib.request.urlopen(req)
-        channel_info = json.loads(resp.read())
+        channel_info = json.loads(resp.read().decode('utf-8'))
         return channel_info['channel']['members']
 
 
