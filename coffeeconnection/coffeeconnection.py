@@ -43,12 +43,27 @@ class Slack:
 
     def get_slack_members(self):
         req = urllib.request.Request(
+            'https://slack.com/api/users.list',
+            headers={'Content-type': 'application/json; charset=utf-8',
+                     'Authorization': 'Bearer %s' % self.token})
+        resp = urllib.request.urlopen(req)
+        data_users = json.loads(resp.read().decode('utf-8'))
+        deads = []
+        for member in data_users['members']:
+            if member['deleted'] or member['is_bot']:
+                deads.append(member['id'])
+
+        req = urllib.request.Request(
             'https://slack.com/api/channels.info?channel=%s' % self.channel,
             headers={'Content-type': 'application/json; charset=utf-8',
                      'Authorization': 'Bearer %s' % self.token})
         resp = urllib.request.urlopen(req)
         channel_info = json.loads(resp.read().decode('utf-8'))
-        return channel_info['channel']['members']
+        members = []
+        for member in channel_info['channel']['members']:
+            if member not in deads:
+                members.append(member)
+        return members
 
 
 def is_off(today):
