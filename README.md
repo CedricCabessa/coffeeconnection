@@ -39,6 +39,6 @@ Edit it with your slack credential
 
 ## Make it nice to you
 
-The sentences the bot says come from the file `coffeeconnection/niceities.txt`.
+The sentences the bot says come from the file `coffeeconnection/niceties.txt`.
 
 You should edit it to make it more fun :-)

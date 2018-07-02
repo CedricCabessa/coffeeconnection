@@ -36,8 +36,8 @@ class Slack:
     def alone(self, member):
         self.say("sorry <@%s> you're alone. Next time :-)" % member)
 
-    def match(self, couple, niceities):
-        sentence = random.choice(niceities)
+    def match(self, couple, niceties):
+        sentence = random.choice(niceties)
         self.say(sentence.format("<@%s>" % couple[0],
                                  "<@%s>" % couple[1]))
 
@@ -118,7 +118,7 @@ def create_matches(queue, nbdayleft):
 
 
 def coffeeconnection(slack, today, epoch, week_period,
-                     hadcoffee_file, niceities):
+                     hadcoffee_file, niceties):
     if not os.path.exists(hadcoffee_file) or \
        need_reset(today, epoch, week_period):
         logging.info("reset queue")
@@ -154,7 +154,7 @@ def coffeeconnection(slack, today, epoch, week_period,
     (matches, queue) = create_matches(queue, nbdayleft)
 
     for couple in matches:
-        slack.match(couple, niceities)
+        slack.match(couple, niceties)
         hadcoffee.append(couple[0])
         hadcoffee.append(couple[1])
 
@@ -186,14 +186,14 @@ def main():
 
     slack = Slack(token, hook, channel)
 
-    niceities = []
-    niceities_file = pkg_resources.resource_filename(__name__, "niceities.txt")
-    with open(niceities_file) as niceities:
-        niceities = [line.strip() for line in niceities.readlines()
+    niceties = []
+    niceties_file = pkg_resources.resource_filename(__name__, "niceties.txt")
+    with open(niceties_file) as niceties:
+        niceties = [line.strip() for line in niceties.readlines()
                      if len(line) > 1]
 
     coffeeconnection(slack, today, epoch, week_period,
-                     hadcoffee_file, niceities)
+                     hadcoffee_file, niceties)
 
 
 if __name__ == '__main__':
