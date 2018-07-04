@@ -2,7 +2,7 @@ Hello {} and {}, would you like a coffee?
 
 Lucky you! {} and {} get to know each other
 
-Sorry {}, but {} want to see you at the bar
+Hey {}, {} want to see you at the bar
 
 The fate has decided to match {} and {} for a drink
 
