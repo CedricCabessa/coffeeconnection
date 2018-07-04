@@ -31,3 +31,5 @@ Hey {}, {} secretly wants to meet you!
 {} said to {}: "This is excuse me, a damn fine cup of coffee."
 
 "What time is it?", said {}. "It's coffee time.", answered {}.
+
+Hey {} it's beertime in Moscow, let's grab a coffee with {}
