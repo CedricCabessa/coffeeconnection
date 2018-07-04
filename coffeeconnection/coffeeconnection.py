@@ -33,9 +33,6 @@ class Slack:
         urllib.request.urlopen(req, json.dumps(payload).encode('utf-8'))
         # print(msg)
 
-    def alone(self, member):
-        self.say("sorry <@%s> you're alone. Next time :-)" % member)
-
     def match(self, couple, niceties):
         sentence = random.choice(niceties)
         self.say(sentence.format("<@%s>" % couple[0],
@@ -116,6 +113,12 @@ def create_matches(queue, nbdayleft):
 
     return matches, queue
 
+def alone(member, memberlist):
+    others = memberlist[:]
+    others.remove(member)
+    other = random.choice(others)
+    return (other, member)
+
 
 def coffeeconnection(slack, today, epoch, week_period,
                      hadcoffee_file, niceties):
@@ -146,7 +149,10 @@ def coffeeconnection(slack, today, epoch, week_period,
     if not queue:
         return
     elif len(queue) == 1:
-        slack.alone(queue[0])
+        couple = alone(queue[0], members)
+        hadcoffee.append(couple[0])
+        hadcoffee.append(couple[1])
+        slack.match(couple, niceties)
         return
 
     random.shuffle(queue)
@@ -159,7 +165,11 @@ def coffeeconnection(slack, today, epoch, week_period,
         hadcoffee.append(couple[1])
 
     if len(queue) == 1 and nbdayleft == 1:
-        slack.alone(queue[0])
+        logging.info("one leftover %s", queue[0])
+        couple = alone(queue[0], members)
+        hadcoffee.append(couple[0])
+        hadcoffee.append(couple[1])
+        slack.match(couple, niceties)
 
     with open(hadcoffee_file, 'w') as fp:
         for coffied in hadcoffee:
@@ -190,7 +200,7 @@ def main():
     niceties_file = pkg_resources.resource_filename(__name__, "niceties.txt")
     with open(niceties_file) as niceties:
         niceties = [line.strip() for line in niceties.readlines()
-                     if len(line) > 1]
+                    if len(line) > 1]
 
     coffeeconnection(slack, today, epoch, week_period,
                      hadcoffee_file, niceties)
