@@ -38,24 +38,23 @@ class Slack:
         self.say(sentence.format("<@%s>" % couple[0],
                                  "<@%s>" % couple[1]))
 
-    def get_slack_members(self):
+    def __slack_request(self, endpoint):
         req = urllib.request.Request(
-            'https://slack.com/api/users.list',
+            'https://slack.com/api/%s' % endpoint,
             headers={'Content-type': 'application/json; charset=utf-8',
                      'Authorization': 'Bearer %s' % self.token})
         resp = urllib.request.urlopen(req)
-        data_users = json.loads(resp.read().decode('utf-8'))
+        return json.loads(resp.read().decode('utf-8'))
+
+    def get_slack_members(self):
+        data_users = self.__slack_request('users.list')
         deads = []
         for member in data_users['members']:
             if member['deleted'] or member['is_bot']:
                 deads.append(member['id'])
 
-        req = urllib.request.Request(
-            'https://slack.com/api/channels.info?channel=%s' % self.channel,
-            headers={'Content-type': 'application/json; charset=utf-8',
-                     'Authorization': 'Bearer %s' % self.token})
-        resp = urllib.request.urlopen(req)
-        channel_info = json.loads(resp.read().decode('utf-8'))
+        channel_info = self.__slack_request(
+            'channels.info?channel=%s' % self.channel)
         members = []
         for member in channel_info['channel']['members']:
             if member not in deads:
