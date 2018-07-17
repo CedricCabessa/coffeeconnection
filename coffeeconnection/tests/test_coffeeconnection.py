@@ -93,7 +93,7 @@ class TestCoffeeConnection(TestCase):
     @patch('coffeeconnection.coffeeconnection.get_already_had_coffee_members')
     def test_main_1(self, get_already_had_coffee_members):
         members = ["a", "b", "c"]
-        slack = coffeeconnection.Slack("", "", "")
+        slack = coffeeconnection.Slack("", "", "", [])
         slack.get_slack_members = MagicMock(return_value=members)
         slack.match = MagicMock()
         get_already_had_coffee_members.return_value = ['a', 'b']
@@ -108,7 +108,7 @@ class TestCoffeeConnection(TestCase):
 
     def test_main_23(self):
         members = [str(i) for i in range(1, 24)]
-        slack = coffeeconnection.Slack("", "", "")
+        slack = coffeeconnection.Slack("", "", "", [])
         slack.get_slack_members = MagicMock(return_value=members)
         slack.match = MagicMock()
 
@@ -148,7 +148,7 @@ class TestCoffeeConnection(TestCase):
 
     def test_main_30(self):
         members = [str(i) for i in range(1, 31)]
-        slack = coffeeconnection.Slack("", "", "")
+        slack = coffeeconnection.Slack("", "", "", [])
         slack.get_slack_members = MagicMock(return_value=members)
         slack.match = MagicMock()
 
@@ -188,7 +188,7 @@ class TestCoffeeConnection(TestCase):
 
     def test_main_31(self):
         members = [str(i) for i in range(1, 32)]
-        slack = coffeeconnection.Slack("", "", "")
+        slack = coffeeconnection.Slack("", "", "", [])
         slack.get_slack_members = MagicMock(return_value=members)
         slack.match = MagicMock()
 
@@ -229,7 +229,7 @@ class TestCoffeeConnection(TestCase):
 
     def test_main_32(self):
         members = [str(i) for i in range(1, 33)]
-        slack = coffeeconnection.Slack("", "", "")
+        slack = coffeeconnection.Slack("", "", "", [])
         slack.get_slack_members = MagicMock(return_value=members)
         slack.match = MagicMock()
 

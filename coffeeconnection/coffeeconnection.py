@@ -14,10 +14,11 @@ import appdirs
 
 
 class Slack:
-    def __init__(self, token, hook, channel):
+    def __init__(self, token, hook, channel, skip_emoji_list):
         self.token = token
         self.hook = hook
         self.channel = channel
+        self.skip_emoji_list = skip_emoji_list
 
     def say(self, msg):
         req = urllib.request.Request(
@@ -50,7 +51,8 @@ class Slack:
         data_users = self.__slack_request('users.list')
         deads = []
         for member in data_users['members']:
-            if member['deleted'] or member['is_bot']:
+            if member['deleted'] or member['is_bot'] or \
+               member['profile']['status_emoji'] in self.skip_emoji_list:
                 deads.append(member['id'])
 
         channel_info = self.__slack_request(
@@ -59,6 +61,8 @@ class Slack:
         for member in channel_info['channel']['members']:
             if member not in deads:
                 members.append(member)
+            else:
+                logging.info('%s is not available' % member)
         return members
 
 
@@ -192,8 +196,12 @@ def main():
     channel = config['DEFAULT']['channel']
     token = config['DEFAULT']['token']
     hook = config['DEFAULT']['hook']
+    if 'skip_emoji_list' in config['DEFAULT']:
+        skip_emoji_list = config['DEFAULT']['skip_emoji_list'].split()
+    else:
+        skip_emoji_list = []
 
-    slack = Slack(token, hook, channel)
+    slack = Slack(token, hook, channel, skip_emoji_list)
 
     niceties = []
     niceties_file = pkg_resources.resource_filename(__name__, "niceties.txt")
