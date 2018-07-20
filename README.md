@@ -42,3 +42,7 @@ Edit it with your slack credential
 The sentences the bot says come from the file `coffeeconnection/niceties.txt`.
 
 You should edit it to make it more fun :-)
+
+## Hack
+
+[![Build Status](https://travis-ci.org/CedricCabessa/coffeeconnection.svg?branch=master)](https://travis-ci.org/CedricCabessa/coffeeconnection)
