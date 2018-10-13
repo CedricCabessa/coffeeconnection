@@ -116,6 +116,7 @@ def create_matches(queue, nbdayleft):
 
     return matches, queue
 
+
 def alone(member, memberlist):
     others = memberlist[:]
     others.remove(member)
