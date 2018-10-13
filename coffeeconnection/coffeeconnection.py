@@ -163,13 +163,18 @@ def coffeeconnection(slack, today, epoch, week_period,
 
     (matches, queue) = create_matches(queue, nbdayleft)
 
+    hadcoffee_today = []
     for couple in matches:
         slack.match(couple, niceties)
         hadcoffee.append(couple[0])
         hadcoffee.append(couple[1])
+        hadcoffee_today.append(couple[0])
+        hadcoffee_today.append(couple[1])
 
     if len(queue) == 1 and nbdayleft == 1:
         logging.info("one leftover %s", queue[0])
+        for coffied in hadcoffee_today:
+            members.remove(coffied)
         couple = alone(queue[0], members)
         hadcoffee.append(couple[0])
         hadcoffee.append(couple[1])
