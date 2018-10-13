@@ -4,4 +4,5 @@ python:
 install:
   - python3 setup.py -q install
 script:
+  - python3 setup.py flake8
   - python3 setup.py test
