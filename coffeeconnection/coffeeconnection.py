@@ -66,8 +66,9 @@ class Slack:
         return members
 
 
-def is_off(today):
-    return today.strftime("%w") == "6" or today.strftime("%w") == "0"
+def is_off(today, days_off):
+    return today.strftime("%w") == "6" or today.strftime("%w") == "0" or \
+        today.strftime("%Y-%m-%d") in days_off
 
 
 def need_reset(today, epoch, week_period):
@@ -124,14 +125,14 @@ def alone(member, memberlist):
     return (other, member)
 
 
-def coffeeconnection(slack, today, epoch, week_period,
+def coffeeconnection(slack, today, epoch, week_period, days_off,
                      hadcoffee_file, niceties):
     if not os.path.exists(hadcoffee_file) or \
        need_reset(today, epoch, week_period):
         logging.info("reset queue")
         open(hadcoffee_file, "w").close()
 
-    if is_off(today):
+    if is_off(today, days_off):
         logging.info("no coffee today")
         return
 
@@ -202,6 +203,10 @@ def main():
     channel = config['DEFAULT']['channel']
     token = config['DEFAULT']['token']
     hook = config['DEFAULT']['hook']
+    if 'days_off' in config['DEFAULT']:
+        days_off = config['DEFAULT']['days_off'].split()
+    else:
+        days_off = []
     if 'skip_emoji_list' in config['DEFAULT']:
         skip_emoji_list = config['DEFAULT']['skip_emoji_list'].split()
     else:
@@ -215,7 +220,7 @@ def main():
         niceties = [line.strip() for line in niceties.readlines()
                     if len(line) > 1]
 
-    coffeeconnection(slack, today, epoch, week_period,
+    coffeeconnection(slack, today, epoch, week_period, days_off,
                      hadcoffee_file, niceties)
 
 

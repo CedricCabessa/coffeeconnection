@@ -15,13 +15,21 @@ def date_from_str(datestr):
 class TestCoffeeConnection(TestCase):
     def test_is_off(self):
         monday = date_from_str('2018-06-11')
-        self.assertFalse(coffeeconnection.is_off(monday))
+        self.assertFalse(coffeeconnection.is_off(monday, []))
         friday = date_from_str('2018-06-15')
-        self.assertFalse(coffeeconnection.is_off(friday))
+        self.assertFalse(coffeeconnection.is_off(friday, []))
         saturday = date_from_str('2018-06-16')
-        self.assertTrue(coffeeconnection.is_off(saturday))
+        self.assertTrue(coffeeconnection.is_off(saturday, []))
         sunday = date_from_str('2018-06-17')
-        self.assertTrue(coffeeconnection.is_off(sunday))
+        self.assertTrue(coffeeconnection.is_off(sunday, []))
+
+    def test_is_off_holiday(self):
+        christmas = date_from_str('2018-12-25')
+        wednesday = date_from_str('2018-12-26')
+        self.assertTrue(coffeeconnection.is_off(
+            christmas, ["2018-08-15", "2018-12-25"]))
+        self.assertFalse(coffeeconnection.is_off(
+            wednesday, ["2018-08-15", "2018-12-25"]))
 
     def test_need_reset(self):
         epoch = date_from_str('2018-06-11')
@@ -103,7 +111,7 @@ class TestCoffeeConnection(TestCase):
 
         today = datetime.datetime.strptime('2018-06-18', '%Y-%m-%d').date()
 
-        coffeeconnection.coffeeconnection(slack, today, epoch, 1,
+        coffeeconnection.coffeeconnection(slack, today, epoch, 1, [],
                                           temp[1], [""])
         self.assertEqual(len(slack.match.mock_calls), 1)
 
@@ -117,37 +125,37 @@ class TestCoffeeConnection(TestCase):
         temp = tempfile.mkstemp()
 
         today = datetime.datetime.strptime('2018-06-18', '%Y-%m-%d').date()
-        coffeeconnection.coffeeconnection(slack, today, epoch, 1,
+        coffeeconnection.coffeeconnection(slack, today, epoch, 1, [],
                                           temp[1], [""])
         self.assertEqual(len(slack.match.mock_calls), 3)
 
         today = datetime.datetime.strptime('2018-06-19', '%Y-%m-%d').date()
-        coffeeconnection.coffeeconnection(slack, today, epoch, 1,
+        coffeeconnection.coffeeconnection(slack, today, epoch, 1, [],
                                           temp[1], [""])
         self.assertEqual(len(slack.match.mock_calls), 6)
 
         today = datetime.datetime.strptime('2018-06-20', '%Y-%m-%d').date()
-        coffeeconnection.coffeeconnection(slack, today, epoch, 1,
+        coffeeconnection.coffeeconnection(slack, today, epoch, 1, [],
                                           temp[1], [""])
         self.assertEqual(len(slack.match.mock_calls), 8)
 
         today = datetime.datetime.strptime('2018-06-21', '%Y-%m-%d').date()
-        coffeeconnection.coffeeconnection(slack, today, epoch, 1,
+        coffeeconnection.coffeeconnection(slack, today, epoch, 1, [],
                                           temp[1], [""])
         self.assertEqual(len(slack.match.mock_calls), 10)
 
         today = datetime.datetime.strptime('2018-06-22', '%Y-%m-%d').date()
-        coffeeconnection.coffeeconnection(slack, today, epoch, 1,
+        coffeeconnection.coffeeconnection(slack, today, epoch, 1, [],
                                           temp[1], [""])
         self.assertEqual(len(slack.match.mock_calls), 12)
 
         today = datetime.datetime.strptime('2018-06-23', '%Y-%m-%d').date()
-        coffeeconnection.coffeeconnection(slack, today, epoch, 1,
+        coffeeconnection.coffeeconnection(slack, today, epoch, 1, [],
                                           temp[1], [""])
         self.assertEqual(len(slack.match.mock_calls), 12)
 
         today = datetime.datetime.strptime('2018-06-24', '%Y-%m-%d').date()
-        coffeeconnection.coffeeconnection(slack, today, epoch, 1,
+        coffeeconnection.coffeeconnection(slack, today, epoch, 1, [],
                                           temp[1], [""])
         self.assertEqual(len(slack.match.mock_calls), 12)
 
@@ -164,37 +172,37 @@ class TestCoffeeConnection(TestCase):
         temp = tempfile.mkstemp()
 
         today = datetime.datetime.strptime('2018-06-18', '%Y-%m-%d').date()
-        coffeeconnection.coffeeconnection(slack, today, epoch, 1,
+        coffeeconnection.coffeeconnection(slack, today, epoch, 1, [],
                                           temp[1], [""])
         self.assertEqual(len(slack.match.mock_calls), 3)
 
         today = datetime.datetime.strptime('2018-06-19', '%Y-%m-%d').date()
-        coffeeconnection.coffeeconnection(slack, today, epoch, 1,
+        coffeeconnection.coffeeconnection(slack, today, epoch, 1, [],
                                           temp[1], [""])
         self.assertEqual(len(slack.match.mock_calls), 6)
 
         today = datetime.datetime.strptime('2018-06-20', '%Y-%m-%d').date()
-        coffeeconnection.coffeeconnection(slack, today, epoch, 1,
+        coffeeconnection.coffeeconnection(slack, today, epoch, 1, [],
                                           temp[1], [""])
         self.assertEqual(len(slack.match.mock_calls), 9)
 
         today = datetime.datetime.strptime('2018-06-21', '%Y-%m-%d').date()
-        coffeeconnection.coffeeconnection(slack, today, epoch, 1,
+        coffeeconnection.coffeeconnection(slack, today, epoch, 1, [],
                                           temp[1], [""])
         self.assertEqual(len(slack.match.mock_calls), 12)
 
         today = datetime.datetime.strptime('2018-06-22', '%Y-%m-%d').date()
-        coffeeconnection.coffeeconnection(slack, today, epoch, 1,
+        coffeeconnection.coffeeconnection(slack, today, epoch, 1, [],
                                           temp[1], [""])
         self.assertEqual(len(slack.match.mock_calls), 15)
 
         today = datetime.datetime.strptime('2018-06-23', '%Y-%m-%d').date()
-        coffeeconnection.coffeeconnection(slack, today, epoch, 1,
+        coffeeconnection.coffeeconnection(slack, today, epoch, 1, [],
                                           temp[1], [""])
         self.assertEqual(len(slack.match.mock_calls), 15)
 
         today = datetime.datetime.strptime('2018-06-24', '%Y-%m-%d').date()
-        coffeeconnection.coffeeconnection(slack, today, epoch, 1,
+        coffeeconnection.coffeeconnection(slack, today, epoch, 1, [],
                                           temp[1], [""])
         self.assertEqual(len(slack.match.mock_calls), 15)
 
@@ -211,37 +219,37 @@ class TestCoffeeConnection(TestCase):
         temp = tempfile.mkstemp()
 
         today = datetime.datetime.strptime('2018-06-18', '%Y-%m-%d').date()
-        coffeeconnection.coffeeconnection(slack, today, epoch, 1,
+        coffeeconnection.coffeeconnection(slack, today, epoch, 1, [],
                                           temp[1], [""])
         self.assertEqual(len(slack.match.mock_calls), 4)
 
         today = datetime.datetime.strptime('2018-06-19', '%Y-%m-%d').date()
-        coffeeconnection.coffeeconnection(slack, today, epoch, 1,
+        coffeeconnection.coffeeconnection(slack, today, epoch, 1, [],
                                           temp[1], [""])
         self.assertEqual(len(slack.match.mock_calls), 7)
 
         today = datetime.datetime.strptime('2018-06-20', '%Y-%m-%d').date()
-        coffeeconnection.coffeeconnection(slack, today, epoch, 1,
+        coffeeconnection.coffeeconnection(slack, today, epoch, 1, [],
                                           temp[1], [""])
         self.assertEqual(len(slack.match.mock_calls), 10)
 
         today = datetime.datetime.strptime('2018-06-21', '%Y-%m-%d').date()
-        coffeeconnection.coffeeconnection(slack, today, epoch, 1,
+        coffeeconnection.coffeeconnection(slack, today, epoch, 1, [],
                                           temp[1], [""])
         self.assertEqual(len(slack.match.mock_calls), 13)
 
         today = datetime.datetime.strptime('2018-06-22', '%Y-%m-%d').date()
-        coffeeconnection.coffeeconnection(slack, today, epoch, 1,
+        coffeeconnection.coffeeconnection(slack, today, epoch, 1, [],
                                           temp[1], [""])
         self.assertEqual(len(slack.match.mock_calls), 16)
 
         today = datetime.datetime.strptime('2018-06-23', '%Y-%m-%d').date()
-        coffeeconnection.coffeeconnection(slack, today, epoch, 1,
+        coffeeconnection.coffeeconnection(slack, today, epoch, 1, [],
                                           temp[1], [""])
         self.assertEqual(len(slack.match.mock_calls), 16)
 
         today = datetime.datetime.strptime('2018-06-24', '%Y-%m-%d').date()
-        coffeeconnection.coffeeconnection(slack, today, epoch, 1,
+        coffeeconnection.coffeeconnection(slack, today, epoch, 1, [],
                                           temp[1], [""])
         self.assertEqual(len(slack.match.mock_calls), 16)
 
@@ -258,37 +266,37 @@ class TestCoffeeConnection(TestCase):
         temp = tempfile.mkstemp()
 
         today = datetime.datetime.strptime('2018-06-18', '%Y-%m-%d').date()
-        coffeeconnection.coffeeconnection(slack, today, epoch, 1,
+        coffeeconnection.coffeeconnection(slack, today, epoch, 1, [],
                                           temp[1], [""])
         self.assertEqual(len(slack.match.mock_calls), 4)
 
         today = datetime.datetime.strptime('2018-06-19', '%Y-%m-%d').date()
-        coffeeconnection.coffeeconnection(slack, today, epoch, 1,
+        coffeeconnection.coffeeconnection(slack, today, epoch, 1, [],
                                           temp[1], [""])
         self.assertEqual(len(slack.match.mock_calls), 7)
 
         today = datetime.datetime.strptime('2018-06-20', '%Y-%m-%d').date()
-        coffeeconnection.coffeeconnection(slack, today, epoch, 1,
+        coffeeconnection.coffeeconnection(slack, today, epoch, 1, [],
                                           temp[1], [""])
         self.assertEqual(len(slack.match.mock_calls), 10)
 
         today = datetime.datetime.strptime('2018-06-21', '%Y-%m-%d').date()
-        coffeeconnection.coffeeconnection(slack, today, epoch, 1,
+        coffeeconnection.coffeeconnection(slack, today, epoch, 1, [],
                                           temp[1], [""])
         self.assertEqual(len(slack.match.mock_calls), 13)
 
         today = datetime.datetime.strptime('2018-06-22', '%Y-%m-%d').date()
-        coffeeconnection.coffeeconnection(slack, today, epoch, 1,
+        coffeeconnection.coffeeconnection(slack, today, epoch, 1, [],
                                           temp[1], [""])
         self.assertEqual(len(slack.match.mock_calls), 16)
 
         today = datetime.datetime.strptime('2018-06-23', '%Y-%m-%d').date()
-        coffeeconnection.coffeeconnection(slack, today, epoch, 1,
+        coffeeconnection.coffeeconnection(slack, today, epoch, 1, [],
                                           temp[1], [""])
         self.assertEqual(len(slack.match.mock_calls), 16)
 
         today = datetime.datetime.strptime('2018-06-24', '%Y-%m-%d').date()
-        coffeeconnection.coffeeconnection(slack, today, epoch, 1,
+        coffeeconnection.coffeeconnection(slack, today, epoch, 1, [],
                                           temp[1], [""])
         self.assertEqual(len(slack.match.mock_calls), 16)
 
