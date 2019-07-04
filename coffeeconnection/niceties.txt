@@ -33,3 +33,13 @@ Hey {}, {} secretly wants to meet you!
 "What time is it?", said {}. "It's coffee time.", answered {}.
 
 Hey {} it's beertime in Moscow, let's grab a coffee with {}
+
+{} would you rather have a coffee with {} or not drink coffee for 1 full week?
+
+{} would you rather lead a boring life from here on forward or have a coffee with {} ?
+
+{} and {} have a coffee, and here’s a game to break to ice: share 3 facts about yourself with the other person, one of which has to be a lie. The other person has to guess what is truth and what is lie.
+
+{} and {}, have a break, have a coffee!
+
+{}, have you met {} ?
