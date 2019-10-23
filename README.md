@@ -46,3 +46,16 @@ You should edit it to make it more fun :-)
 ## Hack
 
 [![Build Status](https://travis-ci.org/CedricCabessa/coffeeconnection.svg?branch=master)](https://travis-ci.org/CedricCabessa/coffeeconnection)
+
+## Development
+
+### Coding style
+
+It is handled by [black](https://github.com/psf/black)
+
+To apply it (requires Python >= 3.6):
+
+```
+pip3 install requirements/dev.txt
+ci/blackify
+```
