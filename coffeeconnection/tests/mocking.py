@@ -4,7 +4,7 @@ from unittest.mock import patch
 
 
 def mock_config(func):
-    def wrapper(self, *args, **kwargs):
+    def wrapper(*args, **kwargs):
         with tempfile.NamedTemporaryFile() as config_file:
             print("Mock config file {}".format(config_file.name))
             with tempfile.NamedTemporaryFile() as hadcoffee_file:
@@ -26,6 +26,6 @@ def mock_config(func):
                     }
                     with open(config_file.name, "w") as config_file_fd:
                         configparser.write(config_file_fd)
-                    func(self, *args, **kwargs)
+                    func(*args, **kwargs)
 
     return wrapper
