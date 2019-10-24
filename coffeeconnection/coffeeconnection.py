@@ -75,8 +75,8 @@ class Slack:
 
 def is_off(today, days_off):
     return (
-        today.strftime("%w") == "6"
-        or today.strftime("%w") == "0"
+        today.strftime("%w") == "6"  # Saturday
+        or today.strftime("%w") == "0"  # Sunday
         or today.strftime("%Y-%m-%d") in days_off
     )
 
