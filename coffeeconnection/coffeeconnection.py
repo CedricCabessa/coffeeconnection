@@ -10,6 +10,7 @@ import math
 import configparser
 import pkg_resources
 
+from coffeeconnection.logger import LOGGER, setup_logger
 import appdirs
 
 
@@ -35,7 +36,6 @@ class Slack:
             "text": msg,
         }
         urllib.request.urlopen(req, json.dumps(payload).encode("utf-8"))
-        # print(msg)
 
     def match(self, couple, niceties):
         sentence = random.choice(niceties)
@@ -69,7 +69,7 @@ class Slack:
             if member not in deads:
                 members.append(member)
             else:
-                logging.info("%s is not available" % member)
+                LOGGER.info("%s is not available", member)
         return members
 
 
@@ -111,14 +111,14 @@ def create_matches(queue, nbdayleft):
     if nbplayer == 1:
         players = queue[:2]
         queue = queue[2:]
-        logging.info("one match today")
+        LOGGER.info("one match today")
     else:
         if nbplayer % 2 != 0:
             if nbplayer == len(queue):
                 nbplayer -= 1
             else:
                 nbplayer += 1
-        logging.info("%s matched today", nbplayer)
+        LOGGER.info("%s matched today", nbplayer)
         players = queue[:nbplayer]
         queue = queue[nbplayer:]
 
@@ -140,15 +140,15 @@ def coffeeconnection(
     slack, today, epoch, week_period, days_off, hadcoffee_file, niceties
 ):
     if not os.path.exists(hadcoffee_file) or need_reset(today, epoch, week_period):
-        logging.info("reset queue")
         open(hadcoffee_file, "w").close()
+        LOGGER.info("reset queue")
 
     if is_off(today, days_off):
-        logging.info("no coffee today")
+        LOGGER.info("no coffee today")
         return
 
     nbdayleft = dayleft(today, epoch, week_period)
-    logging.info("%s days left", nbdayleft)
+    LOGGER.info("%s days left", nbdayleft)
 
     members = slack.get_slack_members()
     queue = []
@@ -156,12 +156,12 @@ def coffeeconnection(
 
     for member in members:
         if member not in hadcoffee:
-            logging.info("%s may have a coffee", member)
+            LOGGER.info("%s may have a coffee", member)
             queue.append(member)
         else:
-            logging.info("%s already had a coffee", member)
+            LOGGER.info("%s already had a coffee", member)
 
-    logging.info("number in queue %s", len(queue))
+    LOGGER.info("number in queue %s", len(queue))
     if not queue:
         return
     elif len(queue) == 1:
@@ -184,7 +184,7 @@ def coffeeconnection(
         hadcoffee_today.append(couple[1])
 
     if len(queue) == 1 and nbdayleft == 1:
-        logging.info("one leftover %s", queue[0])
+        LOGGER.info("one leftover %s", queue[0])
         for coffied in hadcoffee_today:
             members.remove(coffied)
         couple = alone(queue[0], members)
@@ -198,11 +198,7 @@ def coffeeconnection(
 
 
 def main():
-    logging.basicConfig(
-        level=logging.DEBUG,
-        filename="coffeeconnection.log",
-        format="%(asctime)s %(levelname)s %(message)s",
-    )
+    setup_logger()
     configfile = os.path.join(
         appdirs.user_config_dir("coffeeconnection"), "coffeeconnection.ini"
     )
