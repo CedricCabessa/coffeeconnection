@@ -7,32 +7,34 @@ import logging
 import random
 import datetime
 import math
-import configparser
 import pkg_resources
 
 from coffeeconnection.logger import LOGGER, setup_logger
-import appdirs
+from coffeeconnection.config import Configuration
+
+
+def get_niceties():
+    niceties_file = pkg_resources.resource_filename(__name__, "niceties.txt")
+    with open(niceties_file) as niceties:
+        return [line.strip() for line in niceties.readlines() if len(line) > 1]
 
 
 class Slack:
-    def __init__(self, token, hook, channel, skip_emoji_list):
-        self.token = token
-        self.hook = hook
-        self.channel = channel
-        self.skip_emoji_list = skip_emoji_list
+    def __init__(self, config):
+        self.config = config
+
+    def _get_headers(self):
+        return {
+            "Content-type": "application/json; charset=utf-8",
+            "Authorization": "Bearer {}".format(self.config.token),
+        }
 
     def say(self, msg):
-        req = urllib.request.Request(
-            self.hook,
-            headers={
-                "Content-type": "application/json; charset=utf-8",
-                "Authorization": "Bearer %s" % self.token,
-            },
-        )
+        req = urllib.request.Request(self.config.hook, headers=self._get_headers())
         payload = {
             "username": "coffeeconnection",
             "icon_emoji": ":coffee:",
-            "channel": self.channel,
+            "channel": self.config.channel,
             "text": msg,
         }
         urllib.request.urlopen(req, json.dumps(payload).encode("utf-8"))
@@ -43,11 +45,7 @@ class Slack:
 
     def __slack_request(self, endpoint):
         req = urllib.request.Request(
-            "https://slack.com/api/%s" % endpoint,
-            headers={
-                "Content-type": "application/json; charset=utf-8",
-                "Authorization": "Bearer %s" % self.token,
-            },
+            "https://slack.com/api/%s" % endpoint, headers=self._get_headers()
         )
         resp = urllib.request.urlopen(req)
         return json.loads(resp.read().decode("utf-8"))
@@ -59,11 +57,13 @@ class Slack:
             if (
                 member["deleted"]
                 or member["is_bot"]
-                or member["profile"]["status_emoji"] in self.skip_emoji_list
+                or member["profile"]["status_emoji"] in self.config.skip_emoji_list
             ):
                 deads.append(member["id"])
 
-        channel_info = self.__slack_request("channels.info?channel=%s" % self.channel)
+        channel_info = self.__slack_request(
+            "channels.info?channel=%s" % self.config.channel
+        )
         members = []
         for member in channel_info["channel"]["members"]:
             if member not in deads:
@@ -136,23 +136,23 @@ def alone(member, memberlist):
     return (other, member)
 
 
-def coffeeconnection(
-    slack, today, epoch, week_period, days_off, hadcoffee_file, niceties
-):
-    if not os.path.exists(hadcoffee_file) or need_reset(today, epoch, week_period):
-        open(hadcoffee_file, "w").close()
+def coffeeconnection(slack, config, niceties):
+    if not os.path.exists(config.hadcoffee_file) or need_reset(
+        config.today, config.epoch, config.week_period
+    ):
         LOGGER.info("reset queue")
+        open(config.hadcoffee_file, "w").close()
 
-    if is_off(today, days_off):
+    if is_off(config.today, config.days_off):
         LOGGER.info("no coffee today")
         return
 
-    nbdayleft = dayleft(today, epoch, week_period)
+    nbdayleft = dayleft(config.today, config.epoch, config.week_period)
     LOGGER.info("%s days left", nbdayleft)
 
     members = slack.get_slack_members()
     queue = []
-    hadcoffee = get_already_had_coffee_members(hadcoffee_file)
+    hadcoffee = get_already_had_coffee_members(config.hadcoffee_file)
 
     for member in members:
         if member not in hadcoffee:
@@ -192,45 +192,24 @@ def coffeeconnection(
         hadcoffee.append(couple[1])
         slack.match(couple, niceties)
 
-    with open(hadcoffee_file, "w") as fp:
+    with open(config.hadcoffee_file, "w") as fp:
         for coffied in hadcoffee:
             fp.write("%s\n" % coffied)
 
 
 def main():
     setup_logger()
-    configfile = os.path.join(
-        appdirs.user_config_dir("coffeeconnection"), "coffeeconnection.ini"
-    )
-    config = configparser.ConfigParser()
-    config.read(configfile)
 
-    today = datetime.date.today()
-    epoch = datetime.datetime.strptime(config["DEFAULT"]["epoch"], "%Y-%m-%d").date()
-    week_period = int(config["DEFAULT"]["week_period"])
-    hadcoffee_file = config["DEFAULT"]["hadcoffee"]
-    channel = config["DEFAULT"]["channel"]
-    token = config["DEFAULT"]["token"]
-    hook = config["DEFAULT"]["hook"]
-    if "days_off" in config["DEFAULT"]:
-        days_off = config["DEFAULT"]["days_off"].split()
-    else:
-        days_off = []
-    if "skip_emoji_list" in config["DEFAULT"]:
-        skip_emoji_list = config["DEFAULT"]["skip_emoji_list"].split()
-    else:
-        skip_emoji_list = []
-
-    slack = Slack(token, hook, channel, skip_emoji_list)
-
-    niceties = []
-    niceties_file = pkg_resources.resource_filename(__name__, "niceties.txt")
-    with open(niceties_file) as niceties:
-        niceties = [line.strip() for line in niceties.readlines() if len(line) > 1]
-
-    coffeeconnection(
-        slack, today, epoch, week_period, days_off, hadcoffee_file, niceties
-    )
+    try:
+        config = Configuration()
+        config.load()
+        slack = Slack(config)
+        niceties = get_niceties()
+        coffeeconnection(slack, config, niceties)
+        return 0
+    except Exception as error:
+        LOGGER.error("Error: %s", str(error))
+        return 1
 
 
 if __name__ == "__main__":
