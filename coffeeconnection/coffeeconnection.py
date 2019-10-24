@@ -45,7 +45,7 @@ class Slack:
 
     def __slack_request(self, endpoint):
         req = urllib.request.Request(
-            "https://slack.com/api/%s" % endpoint, headers=self._get_headers()
+            "https://slack.com/api/{}".format(endpoint), headers=self._get_headers()
         )
         resp = urllib.request.urlopen(req)
         return json.loads(resp.read().decode("utf-8"))
@@ -62,7 +62,7 @@ class Slack:
                 deads.append(member["id"])
 
         channel_info = self.__slack_request(
-            "channels.info?channel=%s" % self.config.channel
+            "channels.info?channel={}".format(self.config.channel)
         )
         members = []
         for member in channel_info["channel"]["members"]:
@@ -194,7 +194,7 @@ def coffeeconnection(slack, config, niceties):
 
     with open(config.hadcoffee_file, "w") as fp:
         for coffied in hadcoffee:
-            fp.write("%s\n" % coffied)
+            fp.write("{}\n".format(coffied))
 
 
 def main():
