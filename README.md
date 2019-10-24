@@ -49,13 +49,20 @@ You should edit it to make it more fun :-)
 
 ## Development
 
+### Unittests
+
+```bash
+pip3 install requirements/dev.txt
+pytest -vv -s coffeeconnection/tests
+```
+
 ### Coding style
 
 It is handled by [black](https://github.com/psf/black)
 
 To apply it (requires Python >= 3.6):
 
-```
+```bash
 pip3 install requirements/dev.txt
 ci/blackify
 ```
