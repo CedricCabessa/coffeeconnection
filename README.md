@@ -56,7 +56,7 @@ coding style)
 
 Run all the test with
 
-```
+```bash
 tox
 ```
 
