@@ -6,6 +6,8 @@ from unittest import TestCase
 from unittest.mock import MagicMock, patch
 
 from coffeeconnection import coffeeconnection
+from coffeeconnection.config import Configuration
+from coffeeconnection.tests.mocking import mock_config
 
 
 def date_from_str(datestr):
@@ -96,178 +98,170 @@ class TestCoffeeConnection(TestCase):
         self.assertEqual(len(couple), 2)
         self.assertNotEqual(couple, ("b", "b"))
 
+    @mock_config
     @patch("coffeeconnection.coffeeconnection.get_already_had_coffee_members")
     def test_main_1(self, get_already_had_coffee_members):
         members = ["a", "b", "c"]
-        slack = coffeeconnection.Slack("", "", "", [])
+        config = Configuration()
+        config.load()
+
+        slack = coffeeconnection.Slack(config)
         slack.get_slack_members = MagicMock(return_value=members)
         slack.match = MagicMock()
         get_already_had_coffee_members.return_value = ["a", "b"]
 
-        epoch = date_from_str("2018-06-11")
-        temp = tempfile.mkstemp()
-
-        today = date_from_str("2018-06-18")
-
-        coffeeconnection.coffeeconnection(slack, today, epoch, 1, [], temp[1], [""])
+        config.today = date_from_str("2018-06-18")
+        coffeeconnection.coffeeconnection(slack, config, [""])
         self.assertEqual(len(slack.match.mock_calls), 1)
 
+    @mock_config
     def test_main_23(self):
         members = [str(i) for i in range(1, 24)]
-        slack = coffeeconnection.Slack("", "", "", [])
+        config = Configuration()
+        config.load()
+
+        slack = coffeeconnection.Slack(config)
         slack.get_slack_members = MagicMock(return_value=members)
         slack.match = MagicMock()
 
-        epoch = date_from_str("2018-06-11")
-        temp = tempfile.mkstemp()
-
-        today = date_from_str("2018-06-18")
-        coffeeconnection.coffeeconnection(slack, today, epoch, 1, [], temp[1], [""])
+        config.today = date_from_str("2018-06-18")
+        coffeeconnection.coffeeconnection(slack, config, [""])
         self.assertEqual(len(slack.match.mock_calls), 3)
 
-        today = date_from_str("2018-06-19")
-        coffeeconnection.coffeeconnection(slack, today, epoch, 1, [], temp[1], [""])
+        config.today = date_from_str("2018-06-19")
+        coffeeconnection.coffeeconnection(slack, config, [""])
         self.assertEqual(len(slack.match.mock_calls), 6)
 
-        today = date_from_str("2018-06-20")
-        coffeeconnection.coffeeconnection(slack, today, epoch, 1, [], temp[1], [""])
+        config.today = date_from_str("2018-06-20")
+        coffeeconnection.coffeeconnection(slack, config, [""])
         self.assertEqual(len(slack.match.mock_calls), 8)
 
-        today = date_from_str("2018-06-21")
-        coffeeconnection.coffeeconnection(slack, today, epoch, 1, [], temp[1], [""])
+        config.today = date_from_str("2018-06-21")
+        coffeeconnection.coffeeconnection(slack, config, [""])
         self.assertEqual(len(slack.match.mock_calls), 10)
 
-        today = date_from_str("2018-06-22")
-        coffeeconnection.coffeeconnection(slack, today, epoch, 1, [], temp[1], [""])
+        config.today = date_from_str("2018-06-22")
+        coffeeconnection.coffeeconnection(slack, config, [""])
         self.assertEqual(len(slack.match.mock_calls), 12)
 
-        today = date_from_str("2018-06-23")
-        coffeeconnection.coffeeconnection(slack, today, epoch, 1, [], temp[1], [""])
+        config.today = date_from_str("2018-06-23")
+        coffeeconnection.coffeeconnection(slack, config, [""])
         self.assertEqual(len(slack.match.mock_calls), 12)
 
-        today = date_from_str("2018-06-24")
-        coffeeconnection.coffeeconnection(slack, today, epoch, 1, [], temp[1], [""])
+        config.today = date_from_str("2018-06-24")
+        coffeeconnection.coffeeconnection(slack, config, [""])
         self.assertEqual(len(slack.match.mock_calls), 12)
 
-        os.close(temp[0])
-        os.unlink(temp[1])
-
+    @mock_config
     def test_main_30(self):
         members = [str(i) for i in range(1, 31)]
-        slack = coffeeconnection.Slack("", "", "", [])
+        config = Configuration()
+        config.load()
+
+        slack = coffeeconnection.Slack(config)
         slack.get_slack_members = MagicMock(return_value=members)
         slack.match = MagicMock()
 
-        epoch = date_from_str("2018-06-11")
-        temp = tempfile.mkstemp()
-
-        today = date_from_str("2018-06-18")
-        coffeeconnection.coffeeconnection(slack, today, epoch, 1, [], temp[1], [""])
+        config.today = date_from_str("2018-06-18")
+        coffeeconnection.coffeeconnection(slack, config, [""])
         self.assertEqual(len(slack.match.mock_calls), 3)
 
-        today = date_from_str("2018-06-19")
-        coffeeconnection.coffeeconnection(slack, today, epoch, 1, [], temp[1], [""])
+        config.today = date_from_str("2018-06-19")
+        coffeeconnection.coffeeconnection(slack, config, [""])
         self.assertEqual(len(slack.match.mock_calls), 6)
 
-        today = date_from_str("2018-06-20")
-        coffeeconnection.coffeeconnection(slack, today, epoch, 1, [], temp[1], [""])
+        config.today = date_from_str("2018-06-20")
+        coffeeconnection.coffeeconnection(slack, config, [""])
         self.assertEqual(len(slack.match.mock_calls), 9)
 
-        today = date_from_str("2018-06-21")
-        coffeeconnection.coffeeconnection(slack, today, epoch, 1, [], temp[1], [""])
+        config.today = date_from_str("2018-06-21")
+        coffeeconnection.coffeeconnection(slack, config, [""])
         self.assertEqual(len(slack.match.mock_calls), 12)
 
-        today = date_from_str("2018-06-22")
-        coffeeconnection.coffeeconnection(slack, today, epoch, 1, [], temp[1], [""])
+        config.today = date_from_str("2018-06-22")
+        coffeeconnection.coffeeconnection(slack, config, [""])
         self.assertEqual(len(slack.match.mock_calls), 15)
 
-        today = date_from_str("2018-06-23")
-        coffeeconnection.coffeeconnection(slack, today, epoch, 1, [], temp[1], [""])
+        config.today = date_from_str("2018-06-23")
+        coffeeconnection.coffeeconnection(slack, config, [""])
         self.assertEqual(len(slack.match.mock_calls), 15)
 
-        today = date_from_str("2018-06-24")
-        coffeeconnection.coffeeconnection(slack, today, epoch, 1, [], temp[1], [""])
+        config.today = date_from_str("2018-06-24")
+        coffeeconnection.coffeeconnection(slack, config, [""])
         self.assertEqual(len(slack.match.mock_calls), 15)
 
-        os.close(temp[0])
-        os.unlink(temp[1])
-
+    @mock_config
     def test_main_31(self):
         members = [str(i) for i in range(1, 32)]
-        slack = coffeeconnection.Slack("", "", "", [])
+        config = Configuration()
+        config.load()
+
+        slack = coffeeconnection.Slack(config)
         slack.get_slack_members = MagicMock(return_value=members)
         slack.match = MagicMock()
 
-        epoch = date_from_str("2018-06-11")
-        temp = tempfile.mkstemp()
-
-        today = date_from_str("2018-06-18")
-        coffeeconnection.coffeeconnection(slack, today, epoch, 1, [], temp[1], [""])
+        config.today = date_from_str("2018-06-18")
+        coffeeconnection.coffeeconnection(slack, config, [""])
         self.assertEqual(len(slack.match.mock_calls), 4)
 
-        today = date_from_str("2018-06-19")
-        coffeeconnection.coffeeconnection(slack, today, epoch, 1, [], temp[1], [""])
+        config.today = date_from_str("2018-06-19")
+        coffeeconnection.coffeeconnection(slack, config, [""])
         self.assertEqual(len(slack.match.mock_calls), 7)
 
-        today = date_from_str("2018-06-20")
-        coffeeconnection.coffeeconnection(slack, today, epoch, 1, [], temp[1], [""])
+        config.today = date_from_str("2018-06-20")
+        coffeeconnection.coffeeconnection(slack, config, [""])
         self.assertEqual(len(slack.match.mock_calls), 10)
 
-        today = date_from_str("2018-06-21")
-        coffeeconnection.coffeeconnection(slack, today, epoch, 1, [], temp[1], [""])
+        config.today = date_from_str("2018-06-21")
+        coffeeconnection.coffeeconnection(slack, config, [""])
         self.assertEqual(len(slack.match.mock_calls), 13)
 
-        today = date_from_str("2018-06-22")
-        coffeeconnection.coffeeconnection(slack, today, epoch, 1, [], temp[1], [""])
+        config.today = date_from_str("2018-06-22")
+        coffeeconnection.coffeeconnection(slack, config, [""])
         self.assertEqual(len(slack.match.mock_calls), 16)
 
-        today = date_from_str("2018-06-23")
-        coffeeconnection.coffeeconnection(slack, today, epoch, 1, [], temp[1], [""])
+        config.today = date_from_str("2018-06-23")
+        coffeeconnection.coffeeconnection(slack, config, [""])
         self.assertEqual(len(slack.match.mock_calls), 16)
 
-        today = date_from_str("2018-06-24")
-        coffeeconnection.coffeeconnection(slack, today, epoch, 1, [], temp[1], [""])
+        config.today = date_from_str("2018-06-24")
+        coffeeconnection.coffeeconnection(slack, config, [""])
         self.assertEqual(len(slack.match.mock_calls), 16)
 
-        os.close(temp[0])
-        os.unlink(temp[1])
-
+    @mock_config
     def test_main_32(self):
         members = [str(i) for i in range(1, 33)]
-        slack = coffeeconnection.Slack("", "", "", [])
+        config = Configuration()
+        config.load()
+
+        slack = coffeeconnection.Slack(Configuration())
         slack.get_slack_members = MagicMock(return_value=members)
         slack.match = MagicMock()
 
-        epoch = date_from_str("2018-06-11")
-        temp = tempfile.mkstemp()
-
-        today = date_from_str("2018-06-18")
-        coffeeconnection.coffeeconnection(slack, today, epoch, 1, [], temp[1], [""])
+        config.today = date_from_str("2018-06-18")
+        coffeeconnection.coffeeconnection(slack, config, [""])
         self.assertEqual(len(slack.match.mock_calls), 4)
 
-        today = date_from_str("2018-06-19")
-        coffeeconnection.coffeeconnection(slack, today, epoch, 1, [], temp[1], [""])
+        config.today = date_from_str("2018-06-19")
+        coffeeconnection.coffeeconnection(slack, config, [""])
         self.assertEqual(len(slack.match.mock_calls), 7)
 
-        today = date_from_str("2018-06-20")
-        coffeeconnection.coffeeconnection(slack, today, epoch, 1, [], temp[1], [""])
+        config.today = date_from_str("2018-06-20")
+        coffeeconnection.coffeeconnection(slack, config, [""])
         self.assertEqual(len(slack.match.mock_calls), 10)
 
-        today = date_from_str("2018-06-21")
-        coffeeconnection.coffeeconnection(slack, today, epoch, 1, [], temp[1], [""])
+        config.today = date_from_str("2018-06-21")
+        coffeeconnection.coffeeconnection(slack, config, [""])
         self.assertEqual(len(slack.match.mock_calls), 13)
 
-        today = date_from_str("2018-06-22")
-        coffeeconnection.coffeeconnection(slack, today, epoch, 1, [], temp[1], [""])
+        config.today = date_from_str("2018-06-22")
+        coffeeconnection.coffeeconnection(slack, config, [""])
         self.assertEqual(len(slack.match.mock_calls), 16)
 
-        today = date_from_str("2018-06-23")
-        coffeeconnection.coffeeconnection(slack, today, epoch, 1, [], temp[1], [""])
+        config.today = date_from_str("2018-06-23")
+        coffeeconnection.coffeeconnection(slack, config, [""])
         self.assertEqual(len(slack.match.mock_calls), 16)
 
-        today = date_from_str("2018-06-24")
-        coffeeconnection.coffeeconnection(slack, today, epoch, 1, [], temp[1], [""])
+        config.today = date_from_str("2018-06-24")
+        coffeeconnection.coffeeconnection(slack, config, [""])
         self.assertEqual(len(slack.match.mock_calls), 16)
-
-        os.close(temp[0])
-        os.unlink(temp[1])
