@@ -1,2 +1,4 @@
+-r common.txt
 black; python_version >= '3.6'
 pytest==5.2.1
+responses==0.10.6

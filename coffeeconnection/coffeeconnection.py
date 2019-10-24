@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 
-import urllib.request
+import requests
 import os
-import json
 import random
 import math
 import pkg_resources
@@ -17,6 +16,30 @@ def get_niceties():
         return [line.strip() for line in niceties.readlines() if len(line) > 1]
 
 
+def check_response(response):
+    if response.status_code == 400:
+        raise Exception("Bad request: {}".format(response.text))
+    elif response.status_code == 401:
+        raise Exception("Unauthorized: {}".format(response.text))
+
+    if "application/json" not in response.headers["content-type"]:
+        if response.text.lower() != "ok":
+            raise Exception("API response: {}".format(response.text))
+        else:
+            return {}
+
+    try:
+        data = response.json()
+    except Exception as error:
+        raise Exception("API response: {} {}".format(str(error), response.text[200]))
+
+    if not data.get("ok", False):
+        raise Exception("API response: {}".format(data))
+    if data.get("warning", None) is not None:
+        LOGGER.warning(data["warning"])
+    return data
+
+
 class Slack:
     def __init__(self, config):
         self.config = config
@@ -28,25 +51,26 @@ class Slack:
         }
 
     def say(self, msg):
-        req = urllib.request.Request(self.config.hook, headers=self._get_headers())
         payload = {
             "username": "coffeeconnection",
             "icon_emoji": ":coffee:",
             "channel": self.config.channel,
             "text": msg,
         }
-        urllib.request.urlopen(req, json.dumps(payload).encode("utf-8"))
+        resp = requests.post(
+            self.config.hook, json=payload, headers=self._get_headers()
+        )
+        check_response(resp)
 
     def match(self, couple, niceties):
         sentence = random.choice(niceties)
         self.say(sentence.format("<@%s>" % couple[0], "<@%s>" % couple[1]))
 
     def __slack_request(self, endpoint):
-        req = urllib.request.Request(
+        resp = requests.get(
             "https://slack.com/api/{}".format(endpoint), headers=self._get_headers()
         )
-        resp = urllib.request.urlopen(req)
-        return json.loads(resp.read().decode("utf-8"))
+        return check_response(resp)
 
     def get_slack_members(self):
         data_users = self.__slack_request("users.list")

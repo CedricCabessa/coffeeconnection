@@ -6,7 +6,7 @@ setup(
     name="coffeeconnection",
     version="0.2.0",
     packages=find_packages(),
-    install_requires=["appdirs"],
+    install_requires=["appdirs", "requests"],
     setup_requires=["flake8"],
     entry_points={
         "console_scripts": ["coffeeconnection = coffeeconnection.coffeeconnection:main"]

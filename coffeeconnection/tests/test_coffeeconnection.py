@@ -1,6 +1,9 @@
 import datetime
-
 from unittest.mock import MagicMock, patch
+
+import responses
+import requests
+import pytest
 
 from coffeeconnection import coffeeconnection
 from coffeeconnection.config import Configuration
@@ -267,3 +270,83 @@ def test_main_32():
     config.today = date_from_str("2018-06-24")
     coffeeconnection.coffeeconnection(slack, config, [""])
     assert slack.match.call_count == 16
+
+
+@responses.activate
+def test_response_get_200():
+    responses.add(
+        responses.GET, "http://url", status=200, content_type="text/plain", body="ok"
+    )
+    resp = requests.get("http://url")
+    assert coffeeconnection.check_response(resp) == {}
+
+
+@responses.activate
+def test_response_get_200_not_ok():
+    responses.add(
+        responses.GET, "http://url", status=200, content_type="text/plain", body="nok"
+    )
+    resp = requests.get("http://url")
+    with pytest.raises(Exception) as error:
+        coffeeconnection.check_response(resp)
+    assert error.value.args[0] == "API response: nok"
+
+
+@responses.activate
+def test_response_post_200():
+    responses.add(
+        responses.POST,
+        "http://url",
+        status=200,
+        content_type="application/json",
+        json={"ok": True},
+    )
+    resp = requests.post("http://url")
+    assert coffeeconnection.check_response(resp) == {"ok": True}
+
+
+@responses.activate
+def test_response_post_200_not_ok():
+    responses.add(
+        responses.POST,
+        "http://url",
+        status=200,
+        content_type="application/json",
+        json={"ok": False},
+    )
+    resp = requests.post("http://url")
+    with pytest.raises(Exception) as error:
+        coffeeconnection.check_response(resp)
+    assert error.value.args[0] == "API response: {'ok': False}"
+
+
+@responses.activate
+def test_response_400():
+    responses.add(responses.POST, "http://url", status=400, body="error")
+    resp = requests.post("http://url")
+    with pytest.raises(Exception) as error:
+        coffeeconnection.check_response(resp)
+    assert error.value.args[0] == "Bad request: error"
+
+
+@responses.activate
+def test_response_401():
+    responses.add(responses.POST, "http://url", status=401, body="error")
+    resp = requests.post("http://url")
+    with pytest.raises(Exception) as error:
+        coffeeconnection.check_response(resp)
+    assert error.value.args[0] == "Unauthorized: error"
+
+
+@responses.activate
+def test_response_bad_json():
+    responses.add(
+        responses.POST,
+        "http://url",
+        status=200,
+        content_type="application/json",
+        body='{"ok": True}',  # Title case boolean
+    )
+    resp = requests.post("http://url")
+    with pytest.raises(Exception):
+        coffeeconnection.check_response(resp)
