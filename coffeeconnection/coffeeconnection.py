@@ -3,9 +3,7 @@
 import urllib.request
 import os
 import json
-import logging
 import random
-import datetime
 import math
 import pkg_resources
 
