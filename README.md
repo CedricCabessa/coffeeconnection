@@ -13,10 +13,12 @@ coffee party. (People can join the channel during the week)
 
 ## Installation
 
-We use setupttools (feel free to install it with `--user` if you prefer)
+Install the dependencies and the package with pip. You can use a venv or add the
+`--user` flag to avoid install the project globally.
 
 ```
-$ sudo ./setup.py install
+$ pip install -r requirements.txt
+$ pip install .
 ```
 
 Write a crontab:
@@ -48,6 +50,23 @@ You should edit it to make it more fun :-)
 [![Build Status](https://travis-ci.org/CedricCabessa/coffeeconnection.svg?branch=master)](https://travis-ci.org/CedricCabessa/coffeeconnection)
 
 ## Development
+
+### Run tests
+
+We use `tox` to run our tests (including static analysis with `flake8` and
+coding style)
+
+The required tools can be installed with
+
+```
+pip install requirements/dev.txt
+```
+
+Run all the test with
+
+```
+tox
+```
 
 ### Coding style
 

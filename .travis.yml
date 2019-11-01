@@ -2,7 +2,9 @@ language: python
 python:
   - 3.6
 install:
-  - python3 setup.py -q install
+  - pip install tox-travis
 script:
-  - python3 setup.py flake8
-  - python3 setup.py test
+  - tox
+  # make sure install is ok
+  - pip install -r requirements.txt
+  - pip install .
