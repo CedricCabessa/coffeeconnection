@@ -5,7 +5,6 @@ import os
 import random
 import math
 import pkg_resources
-import traceback
 
 from coffeeconnection.logger import LOGGER, setup_logger
 from coffeeconnection.config import Configuration
@@ -231,7 +230,7 @@ def main():
         coffeeconnection(slack, config, niceties)
         return 0
     except Exception as error:
-        LOGGER.error("Error: %s\n%s", str(error), traceback.format_exc())
+        LOGGER.exception("Error: %s\n%s", str(error))
         return 1
 
 
