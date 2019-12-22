@@ -1,10 +1,9 @@
 language: python
 python:
-  - 3.6
+  - 3.7
 install:
   - pip install tox-travis
 script:
   - tox
   # make sure install is ok
-  - pip install -r requirements.txt
-  - pip install .
+  - pipenv install --deploy --system

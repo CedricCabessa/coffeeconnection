@@ -13,12 +13,10 @@ coffee party. (People can join the channel during the week)
 
 ## Installation
 
-Install the dependencies and the package with pip. You can use a venv or add the
-`--user` flag to avoid install the project globally.
+Install the dependencies and the package with pipenv.
 
 ```
-$ pip install -r requirements.txt
-$ pip install .
+$ pipenv install --deploy --system
 ```
 
 Write a crontab:
@@ -56,12 +54,6 @@ You should edit it to make it more fun :-)
 We use `tox` to run our tests (including static analysis with `flake8` and
 coding style)
 
-The required tools can be installed with
-
-```
-pip install requirements/dev.txt
-```
-
 Run all the test with
 
 ```
@@ -74,7 +66,6 @@ It is handled by [black](https://github.com/psf/black)
 
 To apply it (requires Python >= 3.6):
 
-```
-pip3 install requirements/dev.txt
-ci/blackify
+```bash
+pipenv run ci/blackify
 ```
